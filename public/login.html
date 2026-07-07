@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Iniciar Sesión — A.C.I.S.E.M.</title>
+  <meta name="description" content="Plataforma de inteligencia de compras - Secretaría de Educación Municipalidad">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/animations.css">
+</head>
+<body>
+  <div class="login-page">
+    <button class="theme-toggle login-theme-toggle" id="theme-toggle" title="Cambiar tema" aria-label="Cambiar tema claro/oscuro">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path id="theme-icon-path" stroke-linecap="round" stroke-linejoin="round"
+              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+      </svg>
+    </button>
+
+    <div class="login-card page-enter">
+
+      <div class="login-brand">
+        <div class="login-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"/>
+          </svg>
+        </div>
+        <h1 class="login-title">A.C.I.S.E.M.</h1>
+        <p class="login-subtitle">Plataforma de inteligencia de compras</p>
+      </div>
+
+      <form class="login-form" id="login-form" novalidate>
+        <div class="input-group">
+          <label for="email">Email</label>
+          <div class="input-with-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="input-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+            <input class="input" type="email" id="email" name="email"
+                   placeholder="tu@email.com" autocomplete="email" required>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <div class="label-row">
+            <label for="password">Contraseña</label>
+            <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+          </div>
+          <div class="input-with-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="input-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+            <input class="input" type="password" id="password" name="password"
+                   placeholder="••••••••" autocomplete="current-password" required>
+            <button type="button" class="password-toggle" id="password-toggle" tabindex="-1" aria-label="Mostrar contraseña">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" id="eye-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </button>
+          </div>
+          <div id="login-error" class="form-error" style="display:none" role="alert" aria-live="assertive"></div>
+        </div>
+
+        <label class="checkbox-label">
+          <input type="checkbox" name="remember" class="checkbox-input">
+          <span class="checkbox-check"></span>
+          Recordarme
+        </label>
+
+        <button class="btn btn-primary w-full btn-lg" type="submit" id="login-btn">
+          <span class="btn-text">Iniciar sesión</span>
+        </button>
+      </form>
+
+      <div class="demo-credentials">
+        <div class="demo-header">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;color:var(--text-tertiary)"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          <span>Cuentas de demostración</span>
+        </div>
+        <div class="demo-list">
+          <button type="button" class="demo-chip" onclick="fillCredentials('admin@demo.com','admin123')" tabindex="0">
+            <span class="demo-role admin">Admin</span>
+            <span class="demo-email">admin@demo.com</span>
+          </button>
+          <button type="button" class="demo-chip" onclick="fillCredentials('compras@demo.com','compras123')" tabindex="0">
+            <span class="demo-role purchases">Compras</span>
+            <span class="demo-email">compras@demo.com</span>
+          </button>
+          <button type="button" class="demo-chip" onclick="fillCredentials('consulta@demo.com','consulta123')" tabindex="0">
+            <span class="demo-role readonly">Consulta</span>
+            <span class="demo-email">consulta@demo.com</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="login-footer">
+        &copy; 2026 Asistente de Compras Inteligente
+      </div>
+    </div>
+  </div>
+
+  <script nonce="__NONCE__">
+    // ─── Persistir tema ───────────────────────────────────────
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    });
+
+    // ─── Redirigir si ya está logueado ────────────────────────
+    if (localStorage.getItem('token')) {
+      window.location.href = '/';
+    }
+
+    // ─── Password visibility toggle ──────────────────────────
+    const passwordInput = document.getElementById('password');
+    const toggleBtn = document.getElementById('password-toggle');
+    const eyeIcon = document.getElementById('eye-icon');
+
+    toggleBtn.addEventListener('click', () => {
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      eyeIcon.setAttribute('d', isPassword
+        ? 'M3.53 2.47a.75.75 0 00-1.06 1.06l18 18a.75.75 0 001.06-1.06l-18-18zM22.676 12.144a1.249 1.249 0 01-.01.184c-.463 2.445-2.094 4.528-4.153 5.853l-1.407-1.408c1.443-.957 2.588-2.366 3.19-4.048C19.424 9.93 16.755 7.5 12 7.5c-1.166 0-2.25.184-3.236.5L7.396 6.633A9.854 9.854 0 0112 5.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639.052.161.116.326.176.488zM15 12a3 3 0 01-3 3c-.402 0-.79-.08-1.14-.224l3.732-3.732c.406.46.658 1.068.658 1.732v.224z'
+        : 'M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178zM15 12a3 3 0 11-6 0 3 3 0 016 0z'
+      );
+    });
+
+    // ─── Login Form ───────────────────────────────────────────
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn   = document.getElementById('login-btn');
+      const error = document.getElementById('login-error');
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      error.style.display = 'none';
+      error.textContent = '';
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.error || 'Error al iniciar sesión');
+
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        window.location.href = '/';
+      } catch (err) {
+        error.textContent = err.message;
+        error.style.display = 'block';
+        const form = document.getElementById('login-form');
+        form.classList.remove('shake');
+        void form.offsetWidth;
+        form.classList.add('shake');
+      } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+      }
+    });
+
+    function fillCredentials(email, password) {
+      document.getElementById('email').value    = email;
+      document.getElementById('password').value = password;
+      document.getElementById('password').type  = 'password';
+      eyeIcon.setAttribute('d', 'M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178zM15 12a3 3 0 11-6 0 3 3 0 016 0z');
+      document.getElementById('email').focus();
+    }
+  </script>
+</body>
+</html>

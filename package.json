@@ -1,0 +1,53 @@
+{
+  "name": "asistente-compras-inteligente",
+  "version": "1.0.0",
+  "description": "Plataforma SaaS de inteligencia de compras para organizaciones públicas y privadas",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js",
+    "seed": "node server/seeds/demo_data.js",
+    "setup": "node server/seeds/demo_data.js",
+    "migrate": "node server/migrate.js",
+    "migrate:rollback": "node server/migrate.js rollback",
+    "setup:pg": "DB_DRIVER=pg node server/migrate.js && DB_DRIVER=pg node server/seeds/demo_data.js",
+    "test": "node --test server/tests/*.test.js",
+    "test:watch": "node --test --watch server/tests/*.test.js",
+    "test:intelligence": "node --test server/tests/intelligence.test.js",
+    "test:validate": "node --test server/tests/validate.test.js",
+    "test:auth": "node --test server/tests/auth.test.js",
+    "test:jobs": "node --test server/tests/jobs.test.js",
+    "test:comparator": "node --test server/tests/comparator.test.js",
+    "test:e2e": "npx playwright test",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@sentry/node": "^10.63.0",
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^12.11.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^4.18.2",
+    "express-async-errors": "^3.1.1",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "pdf-parse": "^1.1.1",
+    "pdfkit": "^0.19.1",
+    "pg": "^8.22.0",
+    "pino": "^10.3.1",
+    "pino-http": "^11.0.0",
+    "uuid": "^9.0.0",
+    "xlsx": "^0.18.5",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "cross-env": "^10.1.0",
+    "nodemon": "^3.1.0",
+    "vite": "^8.1.3"
+  }
+}

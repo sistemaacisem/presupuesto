@@ -1,0 +1,15 @@
+node_modules/
+data/
+*.sqlite
+*.sqlite3
+.env
+.env.*
+server_output.txt
+*.log
+.git/
+.gitignore
+test-results/
+e2e/
+.github/
+.node-version
+dist/

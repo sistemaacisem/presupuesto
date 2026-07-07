@@ -1,0 +1,11 @@
+{
+    email {$CADDY_EMAIL}
+}
+
+{$CADDY_DOMAIN:http://localhost:80} {
+    reverse_proxy app:3000
+
+    log {
+        output file /data/caddy/logs/access.log
+    }
+}

@@ -1,0 +1,82 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: presupuesto
+      POSTGRES_USER: presupuesto
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-presupuesto_secret}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U presupuesto -d presupuesto"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_DRIVER: pg
+      DATABASE_URL: postgresql://presupuesto:${PG_PASSWORD:-presupuesto_secret}@db:5432/presupuesto
+      JWT_SECRET: ${JWT_SECRET:-}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
+      SEED_DEMO: ${SEED_DEMO:-true}
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/readyz', r => { process.exit(r.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    entrypoint: ["/sbin/tini", "--", "/app/docker-entrypoint.sh"]
+
+  caddy:
+    image: caddy:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - CADDY_DOMAIN=${CADDY_DOMAIN:-}
+      - CADDY_EMAIL=${CADDY_EMAIL:-}
+    depends_on:
+      - app
+
+  backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - ./scripts/backup.sh:/usr/local/bin/backup.sh:ro
+      - ./scripts/backup-entrypoint.sh:/usr/local/bin/backup-entrypoint.sh:ro
+      - backups:/backups
+    entrypoint: ["/usr/local/bin/backup-entrypoint.sh"]
+    environment:
+      PGPASSWORD: ${PG_PASSWORD:-presupuesto_secret}
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: presupuesto
+      DB_USER: presupuesto
+      BACKUP_DIR: /backups
+      RETENTION_DAYS: 7
+      BACKUP_INTERVAL: 86400
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:
+  backups:

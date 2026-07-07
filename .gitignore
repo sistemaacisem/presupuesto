@@ -1,0 +1,31 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno (contienen credenciales)
+.env
+
+# Base de datos local
+data/
+*.sqlite
+*.sqlite3
+
+# Logs
+server_output.txt
+*.log
+npm-debug.log*
+
+# Test output
+test-results/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build output
+dist/

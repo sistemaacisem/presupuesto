@@ -1,0 +1,240 @@
+/* ============================================================
+   ANIMATIONS — Micro-animaciones y transiciones suaves
+   ============================================================ */
+
+/* ─── KEYFRAMES ───────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideOutRight {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(24px); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+@keyframes bounce-in {
+  0%   { transform: scale(0.8); opacity: 0; }
+  60%  { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── ENTRADAS DE PÁGINA ──────────────────────────────────── */
+.page-enter {
+  animation: slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.page-fade {
+  animation: fadeIn 0.2s ease both;
+}
+
+/* ─── STAGGER para listas ─────────────────────────────────── */
+.stagger-item {
+  opacity: 0;
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.stagger-item:nth-child(1)  { animation-delay: 0ms; }
+.stagger-item:nth-child(2)  { animation-delay: 50ms; }
+.stagger-item:nth-child(3)  { animation-delay: 100ms; }
+.stagger-item:nth-child(4)  { animation-delay: 150ms; }
+.stagger-item:nth-child(5)  { animation-delay: 200ms; }
+.stagger-item:nth-child(6)  { animation-delay: 250ms; }
+.stagger-item:nth-child(7)  { animation-delay: 300ms; }
+.stagger-item:nth-child(8)  { animation-delay: 350ms; }
+
+/* ─── HOVER LIFT ──────────────────────────────────────────── */
+.hover-lift {
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ─── RIPPLE EFFECT ───────────────────────────────────────── */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: '';
+  position: absolute;
+  width: 4px; height: 4px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 50%;
+  transform: scale(0);
+  pointer-events: none;
+  animation: ripple-effect 0.6s ease-out;
+}
+
+@keyframes ripple-effect {
+  to { transform: scale(80); opacity: 0; }
+}
+
+/* ─── NUMBER COUNTER ──────────────────────────────────────── */
+.count-animate {
+  display: inline-block;
+  animation: count-up 0.4s ease both;
+}
+
+/* ─── LOADING SPINNER ─────────────────────────────────────── */
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+.spinner-sm { width: 14px; height: 14px; }
+.spinner-lg { width: 32px; height: 32px; border-width: 3px; }
+
+/* ─── PULSE DOT (estado en vivo) ──────────────────────────── */
+.pulse-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+  position: relative;
+  display: inline-block;
+}
+
+.pulse-dot::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: var(--success);
+  opacity: 0.3;
+  animation: pulse 1.5s ease infinite;
+}
+
+/* ─── CHART ENTRY ─────────────────────────────────────────── */
+.chart-wrapper {
+  animation: fadeIn 0.4s ease;
+}
+
+/* ─── DROPDOWN MENU ───────────────────────────────────────── */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  min-width: 160px;
+  z-index: 150;
+  animation: slideDown 0.15s ease;
+  overflow: hidden;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.dropdown-item:hover { background: var(--bg-hover); }
+.dropdown-item.danger { color: var(--error-text); }
+.dropdown-item.danger:hover { background: var(--error-bg); }
+.dropdown-item svg { width: 14px; height: 14px; opacity: 0.7; }
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+/* ─── TOOLTIP ─────────────────────────────────────────────── */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-primary);
+  color: var(--bg-surface);
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--transition);
+  z-index: 100;
+}
+
+[data-tooltip]:hover::after { opacity: 1; }
+
+/* ─── SHAKE (para errores de formulario) ──────────────────── */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.shake {
+  animation: shake 0.35s ease;
+}
+
+/* ─── REDUCE MOTION ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
