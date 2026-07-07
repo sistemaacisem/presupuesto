@@ -28,7 +28,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Create test .env
-        run: echo "JWT_SECRET=test-secret-for-unit-tests" > .env
+        run: printf "JWT_SECRET=test-secret-for-unit-tests\nJWT_EXPIRES_IN=24h\nDB_DRIVER=sqlite\n" > .env
       - run: npm test
 
   e2e:

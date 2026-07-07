@@ -26,6 +26,7 @@ function loginToken() {
 describe('API Integration', () => {
   before(async () => {
     process.env.JWT_SECRET = 'test-secret-for-unit-tests';
+    process.env.JWT_EXPIRES_IN = '24h';
     process.env.NO_AUTO_START = '1';
     process.env.SQLITE_PATH = ':memory:';
     app = require('../index');
