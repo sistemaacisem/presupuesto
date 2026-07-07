@@ -136,16 +136,42 @@ function extractMetaFromSheet(ws) {
 
 /**
  * Parsea un PDF con texto seleccionable.
- * Usa patrones regex primero; si no coinciden, aplica
- * heurística basada en tokens para extraer cantidades y precios.
+ * Usa pdfjs-dist (Mozilla) para extracción robusta de texto.
  */
 async function parsePDF(filePath) {
   try {
-    const pdfParse = require('pdf-parse');
     const fs = require('fs');
-    const buffer = fs.readFileSync(filePath);
-    const data = await pdfParse(buffer);
-    const lines = data.text.split('\n').map(l => l.trim()).filter(Boolean);
+    const pdfjsLib = await import('pdfjs-dist');
+    const buf = fs.readFileSync(filePath);
+    const data = new Uint8Array(buf);
+    const pdfDoc = await pdfjsLib.getDocument({
+      data,
+      useSystemFonts: true,
+      standardFontDataUrl: null
+    }).promise;
+
+    // Extraer texto por páginas, detectando saltos de línea por posición Y
+    const pageTexts = [];
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+      const page = await pdfDoc.getPage(i);
+      const tc = await page.getTextContent();
+      const lines = [];
+      let lastY = null;
+      let currentLine = '';
+      for (const item of tc.items) {
+        const y = Math.round(item.transform[5]);
+        if (lastY !== null && Math.abs(y - lastY) > 3) {
+          if (currentLine) lines.push(currentLine);
+          currentLine = '';
+        }
+        currentLine += (currentLine && lastY !== null && Math.abs(y - lastY) <= 3 ? ' ' : '') + item.str;
+        lastY = y;
+      }
+      if (currentLine) lines.push(currentLine);
+      pageTexts.push(lines.join('\n'));
+    }
+    const text = pageTexts.join('\n');
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
 
     const meta = {};
     const itemCandidates = [];
@@ -161,8 +187,8 @@ async function parsePDF(filePath) {
         meta.date = line.match(/fecha[:\s]+(.+)/i)[1].trim();
         continue;
       }
-      if (/^(?:presupuesto\s*)?n[°º]?[.:]?\s*([\w-]{3,})/i.test(line) && !/art[ií]culo/i.test(line) && !/nuestro|nombre/i.test(line)) {
-        const numMatch = line.match(/^(?:presupuesto\s*)?n[°º]?[.:]?\s*([\w-]{3,})/i);
+      if (/^(?:presupuesto\s*)?n[°º]?(?:ro)?[.:]?\s*([\w-]{3,})/i.test(line) && !/art[ií]culo/i.test(line) && !/nuestro|nombre/i.test(line)) {
+        const numMatch = line.match(/^(?:presupuesto\s*)?n[°º]?(?:ro)?[.:]?\s*([\w-]{3,})/i);
         if (numMatch && /[0-9]/.test(numMatch[1])) { meta.number = numMatch[1].trim(); continue; }
       }
       if (/^\d{1,2}[-/]\d{1,2}[-/]\d{2,4}$/.test(line) && !meta.date) {

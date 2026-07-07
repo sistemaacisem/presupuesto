@@ -40,5 +40,5 @@
 | # | Bug | Severidad | Detalle |
 |---|---|---|---|
 | IC-1 | Tests E2E con SPA timed out (CORREGIDO) | Media | `reuseExistingServer: false` + `NODE_ENV=test` rate limit fix + SPA cleanup (BUG #22) resuelven todos los timeouts de SPA. 48/48 tests E2E pasan en secuencia completa (2.1min) |
-| IC-2 | PDF `ejemplo_utiles.pdf` da `bad XRef Entry` | Media | Ocurre intermitentemente con ciertos PDFs generados por pdfkit |
+| ~~IC-2~~ | ~~PDF `ejemplo_utiles.pdf` da `bad XRef Entry`~~ | Media | **CORREGIDO 2026-07-07**: reemplazado `pdf-parse@1.1.4` por `pdfjs-dist@4.9.155`. La extracción de texto ahora usa `getTextContent()` con detección de saltos de línea por posición Y. Además se corrigió el regex de número de presupuesto para soportar formato "Nro:" |
 | IC-4 | Ratio de compresión artefactual inconsistente | Media | `predictionSvc.calculateCompressionRatio` puede dar valores inexactos según el artículo. Causa: varianza en precios históricos |

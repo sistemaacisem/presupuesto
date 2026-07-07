@@ -25,6 +25,7 @@ function loginToken() {
 
 describe('API Integration', () => {
   before(async () => {
+    process.env.JWT_SECRET = 'test-secret-for-unit-tests';
     process.env.NO_AUTO_START = '1';
     app = require('../index');
     await initDB();

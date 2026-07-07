@@ -27,6 +27,8 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - name: Create test .env
+        run: echo "JWT_SECRET=test-secret-for-unit-tests" > .env
       - run: npm test
 
   e2e:

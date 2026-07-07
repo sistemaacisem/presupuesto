@@ -43,10 +43,12 @@ Cada vez que se encuentre un bug o hallazgo relevante:
 - **CI/CD pipeline creado**: `.github/workflows/ci.yml` con 4 jobs — test (unit), e2e (Playwright, continue-on-error), build-and-push (Docker → GHCR), deploy (SSH opcional)
 - **docker-entrypoint.sh fix**: seed condicional via `SEED_DEMO=true` (ya no se siembra en producción automáticamente)
 - **SPA cleanup / BUG #22 resuelto**: `app.js` `navigate()` ahora invoca `currentCleanup()` antes de cada transición. Todos los módulos exportan `cleanup()` para destruir Chart.js, limpiar timers y resetear estado. Dashboard, reports, articles, providers (charts), budget, history, multicomparison, search (state). 48/48 tests E2E pasan en secuencia (2.1min)
+- **Frontend build (Vite)**: configurado `vite.config.js` con `root: 'public'`, `outDir: '../dist'`, hashes en assets, minificación CSS. Servido en producción via `server/index.js` con fallback a `public/`. Dockerfile multi-stage con build step. 15 assets, build en 632ms, 96/96 tests intactos
+- **GitHub push**: repo init en `presupuesto/`, remote `sistemaacisem/presupuesto.git`, push inicial exitoso (148 files)
 
 ### In Progress / Blocked
-- **PDF `ejemplo_utiles.pdf`**: `bad XRef Entry` intermitente
-- **Frontend build**: falta Vite/webpack para minificar/bundlear JS/CSS
+- **CI/CD primer run**: pendiente verificar resultado en GitHub Actions
+- **Deploy automation**: requiere secrets (`DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, `DEPLOY_PATH`) cuando haya servidor
 - **Credenciales Supabase sin rotar** (BUG #1): pendiente rotar .env
 
 ### Archivos Relevantes
