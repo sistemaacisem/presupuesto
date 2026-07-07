@@ -192,7 +192,7 @@ async function initDB() {
     _db = dbModule;
     logger.info({ driver: 'pg', host: connStr.substring(0, 30) }, 'Usando PostgreSQL');
   } else {
-    const dbPath = path.join(dataDir, 'database.sqlite');
+    const dbPath = process.env.SQLITE_PATH || path.join(dataDir, 'database.sqlite');
     _db = await dbModule.openDatabase(dbPath);
 
     const statements = SCHEMA.split(';').map(s => s.trim()).filter(s => s.length > 0);

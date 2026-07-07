@@ -371,7 +371,11 @@ async function main() {
   console.log('  Abre: http://localhost:3000\n');
 }
 
-main().catch(err => {
-  console.error('\n[FATAL] Error durante la carga de datos:', err);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch(err => {
+    console.error('\n[FATAL] Error durante la carga de datos:', err);
+    process.exit(1);
+  });
+}
+
+module.exports = { main };

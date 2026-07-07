@@ -27,8 +27,11 @@ describe('API Integration', () => {
   before(async () => {
     process.env.JWT_SECRET = 'test-secret-for-unit-tests';
     process.env.NO_AUTO_START = '1';
+    process.env.SQLITE_PATH = ':memory:';
     app = require('../index');
     await initDB();
+    const { main: seed } = require('../seeds/demo_data');
+    await seed();
     server = http.createServer(app);
     await new Promise(r => server.listen(0, r));
     base = `http://localhost:${server.address().port}`;
