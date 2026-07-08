@@ -72,12 +72,7 @@ Render duerme el servicio gratis tras 15 min sin actividad. Hay 3 mecanismos:
 Mientras un usuario tenga la app abierta en el navegador, se pingea `/api/health` cada 5 min. Cubre el horario laboral.
 
 **2. GitHub Actions (gratis, automático)**
-El workflow `.github/workflows/keepalive.yml` pingea cada 10 min usando los minutos gratis de GitHub Actions.
-Opcional: configurar el secret `RENDER_URL` en GitHub (Settings → Secrets and variables → Actions):
-```
-RENDER_URL: https://presupuesto.onrender.com
-```
-Si no se configura, usa `https://presupuesto.onrender.com` por defecto.
+El workflow `.github/workflows/keepalive.yml` pingea cada 10 min — sin configuración extra, funciona 24/7.
 
 **3. UptimeRobot (gratis, más confiable)**
 1. Crear cuenta gratis en [uptimerobot.com](https://uptimerobot.com)
