@@ -16,6 +16,10 @@ document.documentElement.setAttribute('data-theme', 'dark');
 // ─── Ripple effect en botones ────────────────────────────────
 enableRippleEffect();
 
+// ─── Keepalive ───────────────────────────────────────────────
+// Evita que Render duerma el servidor mientras la app está abierta
+setInterval(() => { fetch('/api/health').catch(() => {}); }, 300000);
+
 // ─── Info de usuario ─────────────────────────────────────────
 const user = currentUser();
 
