@@ -38,6 +38,7 @@ export async function render(container, param) {
           </select>
         </div>
         <div class="table-toolbar-right">
+          <button class="btn btn-danger btn-sm" id="btn-delete-selected" style="display:none">Eliminar seleccionados</button>
           <span id="art-count" class="text-secondary text-sm"></span>
         </div>
       </div>
@@ -46,7 +47,7 @@ export async function render(container, param) {
         <table class="data-table">
           <thead>
             <tr>
-              <th></th>
+              <th style="width:44px"><input type="checkbox" id="select-all" title="Seleccionar todos"></th>
               <th>Artículo</th>
               <th>Categoría</th>
               <th>Unidad</th>
@@ -99,8 +100,9 @@ export async function render(container, param) {
         const aliases = JSON.parse(typeof a.aliases === 'string' ? a.aliases : JSON.stringify(a.aliases || []));
         return `
           <tr onclick="navigateTo('articles/${a.id}')" style="cursor:pointer">
-            <td style="padding:8px 8px 8px 14px" onclick="event.stopPropagation();toggleFav('${a.id}',this)">
-              <span style="font-size:16px;cursor:pointer;color:${a.is_favorite?'#F59E0B':'var(--border-strong)'}" title="Favorito">${a.is_favorite?'★':'☆'}</span>
+            <td style="padding:8px 4px 8px 14px;white-space:nowrap" onclick="event.stopPropagation()">
+              <input type="checkbox" class="art-checkbox" value="${a.id}" style="vertical-align:middle;margin-right:4px;accent-color:var(--accent)">
+              <span onclick="toggleFav('${a.id}',this)" style="font-size:16px;cursor:pointer;color:${a.is_favorite?'#F59E0B':'var(--border-strong)'}" title="Favorito">${a.is_favorite?'★':'☆'}</span>
             </td>
             <td>
               <div style="font-weight:500;font-size:13px">${a.name}</div>
@@ -149,6 +151,50 @@ export async function render(container, param) {
     this.classList.toggle('btn-accent', favOnly);
     this.textContent = favOnly ? '★ Todos' : '★ Solo favoritos';
     load();
+  });
+
+  // Bulk selection
+  const selectAll = document.getElementById('select-all');
+  const btnDelete = document.getElementById('btn-delete-selected');
+
+  function updateDeleteBtn() {
+    const checked = document.querySelectorAll('.art-checkbox:checked');
+    if (checked.length) {
+      btnDelete.style.display = '';
+      btnDelete.textContent = `Eliminar ${checked.length} seleccionado(s)`;
+    } else {
+      btnDelete.style.display = 'none';
+    }
+  }
+
+  selectAll.addEventListener('change', () => {
+    document.querySelectorAll('.art-checkbox').forEach(cb => cb.checked = selectAll.checked);
+    updateDeleteBtn();
+  });
+
+  document.addEventListener('change', (e) => {
+    if (e.target.classList.contains('art-checkbox')) {
+      selectAll.checked = document.querySelectorAll('.art-checkbox:checked').length === document.querySelectorAll('.art-checkbox').length;
+      updateDeleteBtn();
+    }
+  });
+
+  btnDelete.addEventListener('click', async () => {
+    const checked = [...document.querySelectorAll('.art-checkbox:checked')];
+    if (!checked.length) return;
+    if (!confirm(`¿Eliminar ${checked.length} artículo(s)? Esta acción no se puede deshacer.`)) return;
+    const ids = checked.map(cb => cb.value);
+    btnDelete.disabled = true;
+    btnDelete.textContent = 'Eliminando...';
+    try {
+      await api.bulkDeleteArticles(ids);
+      showToast('Artículos eliminados', `${checked.length} artículo(s) eliminado(s)`, 'success');
+      load();
+    } catch (err) {
+      showToast('Error', err.message, 'error');
+    } finally {
+      btnDelete.disabled = false;
+    }
   });
 }
 

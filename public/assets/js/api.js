@@ -146,6 +146,19 @@ export const api = {
     });
     return handleResponse(res);
   },
+  async deleteArticle(id) {
+    const res = await fetch(`${BASE_URL}/articles/${id}`, {
+      method: 'DELETE', headers: getHeaders()
+    });
+    return handleResponse(res);
+  },
+  async bulkDeleteArticles(ids) {
+    const res = await fetch(`${BASE_URL}/articles/bulk-delete`, {
+      method: 'POST', headers: getHeaders(),
+      body: JSON.stringify({ ids })
+    });
+    return handleResponse(res);
+  },
 
   // ─── Budgets ──────────────────────────────────────────────
   async getBudgets(params = {}) {

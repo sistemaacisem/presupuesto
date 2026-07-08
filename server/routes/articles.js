@@ -120,6 +120,20 @@ router.patch('/:id/favorite', auth, async (req, res) => {
   res.json({ is_favorite: !!newVal });
 });
 
+// POST /api/articles/bulk-delete
+router.post('/bulk-delete', auth, roles(['admin']), async (req, res) => {
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || !ids.length) return res.status(400).json({ error: 'IDs requeridos' });
+
+  const placeholders = ids.map(() => '?').join(',');
+  const rows = await db.prepare(`SELECT id, name FROM articles WHERE id IN (${placeholders})`).all(...ids);
+  for (const row of rows) {
+    await audit.log('article', row.id, 'delete', { name: row.name }, req.user?.id, req.user?.name);
+  }
+  await db.prepare(`DELETE FROM articles WHERE id IN (${placeholders})`).run(...ids);
+  res.json({ message: `${rows.length} artículo(s) eliminado(s)` });
+});
+
 // DELETE /api/articles/:id
 router.delete('/:id', auth, roles(['admin']), async (req, res) => {
   const article = await db.prepare('SELECT name FROM articles WHERE id = ?').get(req.params.id);
