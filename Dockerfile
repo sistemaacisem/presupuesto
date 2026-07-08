@@ -22,6 +22,7 @@ COPY server/ ./server/
 COPY package*.json ./
 COPY docker-entrypoint.sh ./
 RUN chmod +x docker-entrypoint.sh
+RUN mkdir -p /app/data && chown node:node /app/data
 EXPOSE 3000
 ENV NODE_ENV=production
 USER node
