@@ -23,7 +23,7 @@ Cada vez que se encuentre un bug o hallazgo relevante:
 
 ---
 
-## Progreso del Proyecto — 2026-07-07
+## Progreso del Proyecto — 2026-07-08
 
 ### Done
 - **E2E SPA Timeouts fix**: `reuseExistingServer: false` en `playwright.config.js` para que siempre se refresque la DB entre ejecuciones
@@ -45,11 +45,13 @@ Cada vez que se encuentre un bug o hallazgo relevante:
 - **SPA cleanup / BUG #22 resuelto**: `app.js` `navigate()` ahora invoca `currentCleanup()` antes de cada transición. Todos los módulos exportan `cleanup()` para destruir Chart.js, limpiar timers y resetear estado. Dashboard, reports, articles, providers (charts), budget, history, multicomparison, search (state). 48/48 tests E2E pasan en secuencia (2.1min)
 - **Frontend build (Vite)**: configurado `vite.config.js` con `root: 'public'`, `outDir: '../dist'`, hashes en assets, minificación CSS. Servido en producción via `server/index.js` con fallback a `public/`. Dockerfile multi-stage con build step. 15 assets, build en 632ms, 96/96 tests intactos
 - **GitHub push**: repo init en `presupuesto/`, remote `sistemaacisem/presupuesto.git`, push inicial exitoso (148 files)
+- **Credenciales Supabase rotadas (BUG #1)**: contraseña de DB cambiada en Supabase, `.env` local actualizado, `.env.example` mejorado con advertencias
+- **JWT_SECRET generado**: clave criptográfica de 256 bits reemplazando el placeholder `asistente_compras_secret_key_2024...`
+- **Deploy target migrado a Render**: eliminado job SSH de CI/CD, creado `render.yaml`, documentados pasos de deploy en `OPERATIONS.md`
 
 ### In Progress / Blocked
 - **CI/CD primer run**: pendiente verificar resultado en GitHub Actions
-- **Deploy automation**: requiere secrets (`DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, `DEPLOY_PATH`) cuando haya servidor
-- **Credenciales Supabase sin rotar** (BUG #1): pendiente rotar .env
+- **Deploy en Render**: pendiente crear cuenta en render.com y conectar repositorio
 
 ### Archivos Relevantes
 - `public/assets/js/modules/budget.js` — listado de presupuestos + detalle

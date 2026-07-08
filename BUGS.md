@@ -6,7 +6,7 @@
 
 | # | Bug / Hallazgo | Severidad | Causa | Solución |
 |---|---|---|---|---|
-| 1 | `.env` con credenciales reales de Supabase incluido en el proyecto | Alta | Se commiteó `.env` sin `.gitignore` | Creado `.gitignore` con `.env` incluido. Rotar credenciales pendiente |
+| 1 | `.env` con credenciales reales de Supabase incluido en el proyecto | Alta | Se commiteó `.env` sin `.gitignore` | Creado `.gitignore` con `.env` incluido. **2026-07-08**: Contraseña rotada en Supabase, `.env.example` actualizado con instrucciones de seguridad |
 | 2 | `ssl: rejectUnauthorized: false` en conexión PostgreSQL | Media | Configuración relajada para desarrollo | Cambiado a `NODE_ENV === 'production'` en `supabase.js:24` |
 | 3 | Token JWT aceptado por query param (`auth.js:24`) | Media | Facilita debugging pero expone token en logs | Eliminado el bloque que aceptaba token por query param |
 | 4 | `errorHandler.js` nunca se importa en `index.js` | Baja | Se creó el middleware pero no se integró | Integrado en `index.js` y mejorado con soporte de stack trace en dev |

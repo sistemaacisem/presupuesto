@@ -6,12 +6,13 @@
 |---|---|
 | App | Node.js 20 + Express |
 | DB (dev) | SQLite (`data/database.sqlite`) |
-| DB (prod) | PostgreSQL 16 |
-| Proxy/SSL | Caddy (Let's Encrypt automático) |
+| DB (prod) | PostgreSQL 16 (Supabase) |
+| Proxy/SSL | Render (automático) |
 | Logger | Pino (JSON estructurado) |
 | Error tracking | Sentry (opcional) |
 | Tests | Node Test Runner + Playwright |
-| CI/CD | GitHub Actions → GHCR |
+| CI | GitHub Actions (tests) |
+| Deploy | Render (auto-deploy desde GitHub) |
 
 ## Comandos útiles
 
@@ -35,39 +36,52 @@ npm run setup:pg
 npm run seed
 ```
 
-## Docker
+## Deploy en Render
 
-```bash
-# Iniciar todo (app + PostgreSQL + Caddy + Backup)
-docker compose up -d
+### Requisitos
+- Cuenta en [render.com](https://render.com) (sin tarjeta)
+- Repositorio en GitHub (`sistemaacisem/presupuesto`)
 
-# Ver logs
-docker compose logs -f app
+### Pasos
 
-# Backup manual
-docker compose exec backup /usr/local/bin/backup.sh
+1. Ir a [dashboard.render.com](https://dashboard.render.com) → **New +** → **Web Service**
+2. Conectar GitHub y seleccionar `sistemaacisem/presupuesto`
+3. Configurar:
+   - **Name:** `presupuesto`
+   - **Environment:** `Docker`
+   - **Branch:** `main`
+   - **Health Check Path:** `/api/health`
+4. Agregar variables de entorno:
+   - `NODE_ENV` → `production`
+   - `DB_DRIVER` → `pg`
+   - `DATABASE_URL` → (la connection string de Supabase con la contraseña rotada)
+   - `JWT_SECRET` → (el generado: `1a0848f64216dd5afe81775c8fca6ca9b3efcb6ed32c11c150e3999ddf483865`)
+   - `JWT_EXPIRES_IN` → `24h`
+   - `SEED_DEMO` → `false`
+5. **Create Web Service** — Render builda el Dockerfile y deploya
+6. Render asigna una URL: `https://presupuesto.onrender.com`
 
-# Restaurar backup
-docker compose exec -T db psql -U presupuesto presupuesto < backup.sql
+### Auto-deploy
+Render redeploya automáticamente cada push a `main`. Para deshabilitar:
+**Dashboard → presupuesto → Settings → Auto-Deploy → No**
 
-# Health check
-curl http://localhost:3000/api/health
-curl http://localhost:3000/api/readyz
-curl http://localhost:3000/api/metrics
-```
+### Evitar sleep (UptimeRobot)
+Render duerme el servicio gratis tras 15 min sin actividad.
+
+1. Crear cuenta gratis en [uptimerobot.com](https://uptimerobot.com)
+2. **Add New Monitor**
+   - **Monitor Type:** HTTP(s)
+   - **Friendly Name:** `presupuesto`
+   - **URL:** `https://presupuesto.onrender.com/api/health`
+   - **Interval:** 5 minutos
+3. Listo — Render nunca dormirá
 
 ## Monitoreo
 
 - `GET /api/health` — Estado básico del servidor
 - `GET /api/readyz` — Readiness probe (DB check, 503 si caída)
 - `GET /api/metrics` — Métricas detalladas (memoria, CPU, requests, uptime)
-- `GET /api/audit` — Logs de auditoría (query params: `entity_type`, `entity_id`, `limit`)
-
-## Alertas
-
-- **Error tracking**: Configurar `SENTRY_DSN` en `.env` para capturar errores 5xx
-- **Backup**: El servicio `backup` en compose corre `pg_dump` cada 24h con retención de 7 días
-- **Healthcheck**: Docker reinicia el contenedor `app` si falla 5 veces seguidas (c/15s)
+- **UptimeRobot** te alerta por email si la app no responde
 
 ## Variables de Entorno
 
@@ -75,33 +89,24 @@ curl http://localhost:3000/api/metrics
 |---|---|---|---|
 | `PORT` | No | 3000 | Puerto del servidor |
 | `DB_DRIVER` | No | sqlite | `sqlite` o `pg` |
-| `DATABASE_URL` | Si (pg) | — | Connection string PostgreSQL |
+| `DATABASE_URL` | Si (pg) | — | Connection string PostgreSQL (Supabase) |
 | `JWT_SECRET` | **Sí** | — | Clave para firmar tokens |
 | `JWT_EXPIRES_IN` | No | 24h | Expiración de tokens |
-| `CADDY_DOMAIN` | No | — | Dominio para HTTPS (dejar vacío para HTTP local) |
-| `CADDY_EMAIL` | Si (dominio) | — | Email para Let's Encrypt |
 | `SENTRY_DSN` | No | — | DSN de Sentry para error tracking |
 | `SENTRY_SAMPLE_RATE` | No | 0.1 | Tasa de muestreo Sentry (0.0–1.0) |
-| `PG_PASSWORD` | No | presupuesto_secret | Password PostgreSQL (solo Docker) |
+| `SEED_DEMO` | No | true | Sembrar datos demo al iniciar |
 
 ## Troubleshooting
 
-### 5xx en producción
-1. Revisar logs: `docker compose logs app`
+### 5xx en Render
+1. Ir a **Dashboard → presupuesto → Logs**
 2. Verificar Sentry si está configurado
-3. Check DB: `curl http://localhost:3000/api/readyz`
-4. Ver métricas: `curl http://localhost:3000/api/metrics`
+3. Check DB: `curl https://presupuesto.onrender.com/api/readyz`
 
-### Backup no se ejecuta
-1. Verificar que el servicio `backup` esté corriendo: `docker compose ps`
-2. Revisar logs: `docker compose logs backup`
-3. Ejecutar manual: `docker compose exec backup /usr/local/bin/backup.sh`
-
-### Certificado SSL vencido
-Caddy renueva automáticamente. Si hay problemas:
-```bash
-docker compose logs caddy
-```
+### App no responde (timeout)
+1. UptimeRobot te alerta
+2. Revisar logs en dashboard de Render
+3. Verificar que Supabase esté accesible desde Render
 
 ### Tests E2E fallan por timeout en SPA
 Los tests que navegan con hash (`#/history`, `#/budget`, `#/providers`) pueden fallar si un servidor anterior quedó corriendo:

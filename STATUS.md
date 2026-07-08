@@ -1,6 +1,6 @@
 # Estado del Proyecto
 
-**Última actualización:** 2026-07-07
+**Última actualización:** 2026-07-08
 
 ---
 
@@ -60,9 +60,11 @@ Sistema de gestión de presupuestos educativos A.C.I.S.E.M. App Node.js/Express 
 | # | Problema | Severidad | Estado |
 |---|---|---|---|---|
 | 1 | Degradación acumulativa E2E tras ~60 tests | Media | Sin resolver (requiere SPA cleanup) |
-| 2 | PDF `ejemplo_utiles.pdf` da bad XRef Entry | Media | Sin resolver |
+| 2 | PDF parser (CORREGIDO) | Media | Reemplazado pdf-parse por pdfjs-dist |
 | 3 | Dashboard E2E charts (CORREGIDO) | Baja | Selector corregido |
 | 4 | API alerts inconsistente (`{alerts:[]}` vs array directo) | Media | Sin resolver |
+| 5 | ~~Credenciales Supabase expuestas~~ (CORREGIDO) | Alta | Contraseña rotada, `.env.example` actualizado |
+| 6 | ~~Sin servidor para deploy~~ (CORREGIDO) | Alta | Migrado a Render (gratis, sin tarjeta) |
 
 ### Detalle: Degradación acumulativa E2E
 
@@ -73,7 +75,7 @@ Sistema de gestión de presupuestos educativos A.C.I.S.E.M. App Node.js/Express 
 
 ---
 
-## 📋 Próximos Pasos (5 prioridades)
+## 📋 Próximos Pasos (6 prioridades)
 
 ### 1. 🔧 Arreglar Degradación Acumulativa SPA (TESTS E2E)
 - **Qué:** Tests que usan SPA pasan individualmente pero fallan en secuencia tras ~60 tests
@@ -100,14 +102,11 @@ Sistema de gestión de presupuestos educativos A.C.I.S.E.M. App Node.js/Express 
   - E2E test dedicado que verifique valores > 0 en KPIs
 - **Archivos:** `public/assets/js/modules/dashboard.js`
 
-### 4. 🐛 Fix PDF Parser (bad XRef Entry)
-- **Qué:** Algunos PDFs generados por pdfkit dan error al parsearlos
-- **Por qué:** Inconsistencia entre pdfkit (generación) y pdf-parse (lectura)
-- **Cómo:**
-  - Investigar si es un bug de versión de pdf-parse
-  - Considerar reemplazar pdf-parse por pdf.js o similar
-  - Agregar test unitario con el PDF problemático
-- **Archivos:** `server/services/parser.js`
+### 4. 🐛 API alerts inconsistente
+- **Qué:** `GET /api/alerts` devuelve `{alerts:[]}` pero frontend espera array directo
+- **Por qué:** Inconsistencia en contrato API-frontend
+- **Cómo:** Unificar a un solo formato (BUG #10 en BUGS.md)
+- **Archivos:** `server/routes/alerts.js`
 
 ### 5. 🧹 Limpieza de Código Muerto
 - **Qué:** Eliminar funciones, módulos y rutas que ya no se usan
@@ -118,6 +117,17 @@ Sistema de gestión de presupuestos educativos A.C.I.S.E.M. App Node.js/Express 
   - Rutas de server que ya no tienen frontend
   - CSS no utilizado
 - **Archivos:** `public/assets/js/modules/comparisons.js`, `budget.js`, `server/routes/`
+
+### 6. 🚀 Deploy en Render
+- **Qué:** Poner la app en producción usando Render (gratis)
+- **Cómo:**
+  1. Crear cuenta en render.com
+  2. Conectar repo de GitHub
+  3. Configurar web service con Dockerfile
+  4. Agregar variables de entorno (DATABASE_URL, JWT_SECRET, etc.)
+  5. Crear monitor en UptimeRobot para evitar sleep
+- **Documentación:** `OPERATIONS.md` — sección "Deploy en Render"
+- **Archivo:** `render.yaml` (blueprint para Render)
 
 ---
 

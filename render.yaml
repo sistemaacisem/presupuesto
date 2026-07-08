@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: presupuesto
+    env: docker
+    dockerfilePath: ./Dockerfile
+    repo: https://github.com/sistemaacisem/presupuesto
+    branch: main
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_DRIVER
+        value: pg
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 24h
+      - key: SEED_DEMO
+        value: false
+    healthCheckPath: /api/health
