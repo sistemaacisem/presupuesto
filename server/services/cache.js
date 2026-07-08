@@ -9,15 +9,19 @@ class Cache {
   get(key) {
     const entry = this._store.get(key);
     if (!entry) return null;
-    if (Date.now() - entry.ts > this._ttl) {
+    if (this._isExpired(entry)) {
       this._store.delete(key);
       return null;
     }
     return entry.value;
   }
 
-  set(key, value) {
-    this._store.set(key, { value, ts: Date.now() });
+  set(key, value, customTtlMs) {
+    this._store.set(key, { value, ts: Date.now(), ttl: customTtlMs || this._ttl });
+  }
+
+  _isExpired(entry) {
+    return Date.now() - entry.ts > entry.ttl;
   }
 
   invalidate(pattern) {

@@ -74,6 +74,10 @@ export const api = {
     const res = await fetch(`${BASE_URL}/analytics/export`, { headers: getHeaders() });
     return handleResponse(res);
   },
+  async getIPC() {
+    const res = await fetch(`${BASE_URL}/analytics/ipc`, { headers: getHeaders() });
+    return handleResponse(res);
+  },
 
   // ─── Providers ────────────────────────────────────────────
   async getProviders(params = {}) {

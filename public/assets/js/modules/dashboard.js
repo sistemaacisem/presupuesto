@@ -21,7 +21,7 @@ export async function render(container) {
       </div>
     </div>
     <div class="skeleton-kpi-grid">
-      ${Array(6).fill(`
+      ${Array(4).fill(`
         <div class="skeleton-kpi">
           <div class="skeleton skeleton-kpi-bar"></div>
           <div class="skeleton skeleton-kpi-bar"></div>
@@ -49,10 +49,11 @@ export async function render(container) {
     api.getSpendingByCategory(),
     api.getSpendingByProvider(),
     api.getMonthlyTrend(),
-    api.getTopArticles()
+    api.getTopArticles(),
+    api.getIPC()
   ]);
 
-  const [dash, byCategory, byProvider, monthly, topArticles] = results.map(r =>
+  const [dash, byCategory, byProvider, monthly, topArticles, ipcData] = results.map(r =>
     r.status === 'fulfilled' ? r.value : null
   );
 
@@ -71,7 +72,8 @@ export async function render(container) {
     byCategory: byCategory || [],
     byProvider: byProvider || [],
     monthly: monthly || [],
-    topArticles: topArticles || []
+    topArticles: topArticles || [],
+    ipcData: ipcData || null
   });
 }
 
@@ -105,7 +107,7 @@ function animateKPIValue(element, targetValue, duration = 800) {
 }
 
 function renderDashboard(container, data) {
-  const { dash, byCategory, byProvider, monthly, topArticles } = data;
+  const { dash, byCategory, byProvider, monthly, topArticles, ipcData } = data;
 
   container.innerHTML = `
     <div class="page-header">
@@ -124,11 +126,6 @@ function renderDashboard(container, data) {
     <!-- KPI Cards -->
     <div class="kpi-grid" id="kpi-grid">
       <div class="kpi-card">
-        <div class="kpi-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"/></svg></div>
-        <div class="kpi-value" data-value="${formatARS(dash.totalBudgetAmount)}">${formatARS(dash.totalBudgetAmount)}</div>
-        <div class="kpi-label">Inversión Total</div>
-      </div>
-      <div class="kpi-card">
         <div class="kpi-icon info"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
         <div class="kpi-value" data-value="${dash.budgetCount}">${dash.budgetCount}</div>
         <div class="kpi-label">Presupuestos</div>
@@ -144,16 +141,10 @@ function renderDashboard(container, data) {
         <div class="kpi-label">Artículos</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-icon ${dash.avgOverpriced > 1 ? 'error' : 'success'}"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg></div>
-        <div class="kpi-value ${dash.avgOverpriced > 1 ? 'text-error' : 'text-success'}" data-value="${dash.avgOverpriced.toFixed(1)}">${dash.avgOverpriced.toFixed(1)}</div>
-        <div class="kpi-label">Prom. sobreprecio</div>
-        ${dash.avgOverpriced > 1 ? '<div class="kpi-change up"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg> Requiere atención</div>' : '<div class="kpi-change down"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg> Dentro de lo esperado</div>'}
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon ${dash.pendingAlerts > 0 ? 'warning' : 'info'}"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg></div>
-        <div class="kpi-value ${dash.pendingAlerts > 0 ? 'text-warning' : 'text-secondary'}" data-value="${dash.pendingAlerts}">${dash.pendingAlerts}</div>
-        <div class="kpi-label">Alertas pendientes</div>
-        ${dash.pendingAlerts > 0 ? '<div class="kpi-change up" style="background:var(--warning-bg);color:var(--warning-text)"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01"/></svg> Revisar</div>' : '<div class="kpi-change down" style="background:var(--bg-hover);color:var(--text-tertiary)">Sin novedades</div>'}
+        <div class="kpi-icon info"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+        <div class="kpi-value" data-value="${ipcData?.ipcGeneral != null ? ipcData.ipcGeneral + '%' : '—'}">${ipcData?.ipcGeneral != null ? ipcData.ipcGeneral + '%' : '—'}</div>
+        <div class="kpi-label">IPC Mensual</div>
+        ${ipcData ? `<div class="kpi-change down" style="color:var(--text-tertiary);font-size:10px">${ipcData.fecha} · ${ipcData.fuente}</div>` : ''}
       </div>
     </div>
 

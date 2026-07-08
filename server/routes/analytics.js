@@ -6,7 +6,62 @@ const db = require('../config/database');
 const auth = require('../middleware/auth');
 const Cache = require('../services/cache');
 
-const cache = new Cache(30); // 30s TTL
+const cache = new Cache(30);
+
+const IPC_CACHE_KEY = 'ipc-data';
+const IPC_CACHE_TTL = 3600000; // 1 hora
+
+async function fetchIPC() {
+  const res = await fetch(
+    'https://infra.datos.gob.ar/catalog/sspm/dataset/173/distribution/173.1/download/ipc-categorias-tasas-variacionmensual-basedic-2016.csv'
+  );
+  const text = await res.text();
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',');
+  const valores = [];
+
+  for (let i = lines.length - 1; i > 0; i--) {
+    const cols = lines[i].split(',');
+    if (cols.length < 4) continue;
+    const date = cols[0].trim();
+    if (!date) continue;
+    const estacionales = parseFloat(cols[1]);
+    const nucleo = parseFloat(cols[2]);
+    const regulados = parseFloat(cols[3]);
+    if (isNaN(nucleo)) continue;
+    valores.push({ date, estacionales, nucleo, regulados });
+  }
+
+  const latest = valores[0];
+  if (!latest) return null;
+
+  const variacion = ((latest.estacionales + latest.nucleo + latest.regulados) / 3 * 100).toFixed(2);
+
+  return {
+    fecha: latest.date,
+    ipcNucleo: (latest.nucleo * 100).toFixed(2),
+    ipcRegulados: (latest.regulados * 100).toFixed(2),
+    ipcEstacionales: (latest.estacionales * 100).toFixed(2),
+    ipcGeneral: variacion,
+    fuente: 'INDEC - Datos Argentina'
+  };
+}
+
+// GET /api/analytics/ipc — Último IPC
+router.get('/ipc', async (req, res) => {
+  try {
+    const cached = cache.get(IPC_CACHE_KEY);
+    if (cached) return res.json(cached);
+
+    const data = await fetchIPC();
+    if (!data) return res.status(503).json({ error: 'No se pudo obtener IPC' });
+
+    cache.set(IPC_CACHE_KEY, data, IPC_CACHE_TTL);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener IPC' });
+  }
+});
 
 // GET /api/analytics/dashboard — Datos consolidados para el dashboard
 router.get('/dashboard', auth, async (req, res) => {
