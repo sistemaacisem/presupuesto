@@ -22,7 +22,7 @@ let pool = null;
 function createPool(connectionString) {
   pool = new Pool({
     connectionString,
-    ssl: { rejectUnauthorized: process.env.NODE_ENV === 'production' },
+    ssl: { rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED === 'true' },
     max: 10,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000
