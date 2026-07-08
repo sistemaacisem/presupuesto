@@ -1,5 +1,6 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
+RUN apk add --no-cache python3 make g++
 COPY package*.json vite.config.js ./
 RUN npm ci
 COPY public/ ./public/
@@ -7,6 +8,7 @@ RUN npx vite build
 
 FROM node:20-alpine AS prod-deps
 WORKDIR /app
+RUN apk add --no-cache python3 make g++
 COPY package*.json ./
 RUN npm ci --omit=dev
 
